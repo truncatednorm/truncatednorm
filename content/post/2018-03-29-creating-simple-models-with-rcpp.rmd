@@ -1,0 +1,36 @@
+---
+title: Creating Simple Models with Rcpp
+author: Greg Anderson
+date: '2018-03-29'
+slug: creating-simple-models-with-rcpp
+categories: ["R","Rcpp"]
+tags: ["logistic regression", "nonlinear minimilization", "optim"]
+---
+
+For my job I recently was tasked with creating a hybrid modeling technique that adopted aspects of both gravitational (i.e., spatial interaction modeling) and machine learning approaches. I quickly got to work and created a few model prototypes using the optimization functions within `R`. However, I found that for the size of the datasets I was using and the complexity of the objective function, convergence was time consuming. Of course my first instinct was to write a cleaner objective function in hopes that it would speed up the mimiziation, but after a few hours, I realized that I was not going to approach the level of speed that I desired. And this... is when `Rcpp` entered my life. Learning `Rcpp` had been a desire of mine for several years, but I never had the use case to invest the time to learn it. Of course there are several great resources for creating simple `Rcpp` files (e.g., Advanced R) and then there are also many complex examples available within current `R` packages. It is the middle area that seemed not to have much resources attributed to it. In order to help fill this void, I will be providing several tutorials on building functions in `Rcpp`.
+
+## A Likelihood Function for Logistic Regression
+
+As a starting place for creating optimization functions, I often turn to programing logistic regression from scratch. It is a fairly simple model if you utilize the distributional functions available within `R` or `Rcpp`, but the function provides enough complexity that it allows you to learn the proper syntax. We will start out with simulating an example dataset:
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+n<-1000 #number of observations
+p<-10 #number of parameters
+X<-cbind(1,replicate(p-1,runif(n,-1,1))) #design matrix
+beta<-runif(p,-3,3) #regression coefficients
+y<-rbinom(n,1,plogis(X%*%beta)) #simulate target
+simdat<-data.frame(target=y,X[,-1]) # form data.frame
+names(simdat)[-1]<-paste0("x",seq(ncol(X)-1)) #name variables
+```
+
+Of course we could fit a logist regression model using `glm`, but in order to learn the concepts of optimization using `Rcpp`, we are going to write out several different routines to fit this model from scratch. First we will write out an objective function in R and then minimize it using `optim`. Then we will move on to writting the same function in `Rcpp`. 
+
+```{r,message=FALSE,warning=FALSE}
+likr<-function(parms){
+  return(parms)
+}
+```
+
+
+
